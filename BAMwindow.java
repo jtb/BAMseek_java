@@ -74,12 +74,16 @@ public class BAMwindow extends JFrame {
 	    
 	    JFileChooser choose = new JFileChooser();
 	    if(choose.showOpenDialog(BAMwindow.this) == JFileChooser.APPROVE_OPTION){
-		System.out.println("got here too!");
-		
+				
 		try{
-		    BAMwindow bw = new BAMwindow(choose.getSelectedFile().getCanonicalPath());
-		    bw.pack();
-		    bw.setVisible(true);
+		    final String pathname = choose.getSelectedFile().getCanonicalPath();
+		    javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			    public void run() {
+				BAMwindow bw = new BAMwindow(pathname);
+				bw.pack();
+				bw.setVisible(true);
+			    }
+			});
 		}catch(IOException e){}
 	    }
 	}

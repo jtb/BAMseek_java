@@ -15,8 +15,12 @@ public class BAMseek {
 	    }catch(Exception e){}
 	}
 	
-	BAMwindow bw = new BAMwindow("");
-	bw.pack();
-	bw.setVisible(true);
+	javax.swing.SwingUtilities.invokeLater(new Runnable() {
+		public void run() {
+		    BAMwindow bw = new BAMwindow("");
+		    bw.pack();
+		    bw.setVisible(true);
+		}
+	    });
     }
 }
