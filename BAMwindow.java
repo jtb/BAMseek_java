@@ -13,6 +13,9 @@ import java.util.ArrayList;
 public class BAMwindow extends JFrame {
     JSpinner spin;
     JSlider slide;
+    PagingModel pm = null;
+    JTable table = null;
+    JTextArea header = null;
 
     BAMwindow(final String filename){
 	super(filename);
@@ -21,11 +24,14 @@ public class BAMwindow extends JFrame {
 	
 	initMenu();
 		
-	PagingModel pm = new PagingModel(filename);
-	JTable table = new JTable(pm);
+	pm = new PagingModel(filename);
+	table = new JTable(pm);
+	
+	table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+	
 	JTable rowTable = new RowNumberTable(table);
-
-	JTextArea header = new JTextArea(pm.getHeader());
+	header = new JTextArea(pm.getHeader());
+	header.setEditable(false);
 	
 	JPanel content = new JPanel();
 	content.setLayout(new BorderLayout());
@@ -74,16 +80,23 @@ public class BAMwindow extends JFrame {
 	    
 	    JFileChooser choose = new JFileChooser();
 	    if(choose.showOpenDialog(BAMwindow.this) == JFileChooser.APPROVE_OPTION){
-				
-		try{
+		
+		try {
+
 		    final String pathname = choose.getSelectedFile().getCanonicalPath();
-		    javax.swing.SwingUtilities.invokeLater(new Runnable() {
-			    public void run() {
-				BAMwindow bw = new BAMwindow(pathname);
-				bw.pack();
-				bw.setVisible(true);
-			    }
-			});
+		    if(pm == null || pm.filename.equals("")){
+			pm = new PagingModel(pathname);
+			header.setText(pm.getHeader());
+			table.setModel(pm);
+		    }else{
+			javax.swing.SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+				    BAMwindow bw = new BAMwindow(pathname);
+				    bw.pack();
+				    bw.setVisible(true);
+				}
+			    });
+		    }
 		}catch(IOException e){}
 	    }
 	}
@@ -93,7 +106,7 @@ public class BAMwindow extends JFrame {
 class PagingModel extends AbstractTableModel {
 
     protected ArrayList<String[]> data;
-    protected String filename = "";
+    public String filename = "";
     protected PageReader pr = null;
     protected int column_count = 0;
 
@@ -106,26 +119,23 @@ class PagingModel extends AbstractTableModel {
     }
 
     public Object getValueAt(int row, int col) {
-        //int realRow = row + (pageOffset * pageSize);                                                                                        
-        //return data[realRow].getValueAt(col);
-	if(data.get(row).length <= col) return "";
+    	if(data.get(row).length <= col) return "";
         return data.get(row)[col];
     }
 
     public int getColumnCount() {
-	if(pr == null) return 0;
 	return column_count;
     }
 
     public int getRowCount() {
 	if(pr == null) return 0;
 	return Math.min(1000, data.size());
-        //return Math.min(pageSize, data.length);                                                                                             
     }
 
     private boolean jumpToPage(int page_no){
 	if(pr == null) return false;
 	data = new ArrayList<String []>();
+	
 	try{
 	    pr.jumpToPage(page_no);
 	    String[] fields;
@@ -141,7 +151,7 @@ class PagingModel extends AbstractTableModel {
     
     public String getHeader(){
 	if(filename.equals("")){
-            return "Welcome to BAMseek.";
+            return "BAMseek allows you to scroll through large SAM/BAM alignment files.  Please go to \'File > Open\' File to get started.";
 	}
 	
         if(pr == null){
