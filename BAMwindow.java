@@ -121,7 +121,6 @@ class PagingModel extends AbstractTableModel {
 
     private boolean jumpToPage(int page_no){
 	if(pr == null) return false;
-	//data.clear();
 	data = new ArrayList<String []>();
 	try{
 	    pr.jumpToPage(page_no);
@@ -141,7 +140,6 @@ class PagingModel extends AbstractTableModel {
             return "Welcome to BAMseek.";
 	}
 	
-        pr = new PageReader(filename);
         if(pr == null){
             return "Unable to recognize file as BAM or SAM";
 	}

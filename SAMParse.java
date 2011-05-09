@@ -12,10 +12,10 @@ public class SAMParse extends BaseParse {
 	super(filename);
 	buffer_pos = 0;
 	file_pos = 0;
-	filesize = new File(filename).length();
 
 	try {
 	    filein = new RandomAccessFile(filename, "r");
+	    filesize = filein.length();
 	    parseHeader();
 	    file_pos = filein.getFilePointer();
 	}catch(IOException ie){}
@@ -58,7 +58,13 @@ public class SAMParse extends BaseParse {
 	}
     }
 
-    public double getProgress() { return 0.0; }
+    public double getProgress() { 
+	try {
+	    return 1.0*filein.getFilePointer()/(1.0*filein.length()); 
+	} catch (IOException e){
+	    return 1.0;
+	}
+    }
 
     private void parseHeader(){
 	String line = null;
