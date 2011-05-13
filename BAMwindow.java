@@ -10,7 +10,7 @@ import javax.swing.table.TableModel;
 
 import java.util.ArrayList;
 
-public class BAMwindow extends JFrame {
+public class BAMwindow extends JFrame implements ChangeListener {
     JSpinner spin;
     JSlider slide;
     PagingModel pm = null;
@@ -59,8 +59,19 @@ public class BAMwindow extends JFrame {
 	slide = new JSlider(JSlider.HORIZONTAL, 1, 100, 1);
 	pages.add(slide, BorderLayout.CENTER);
 
+	spin.addChangeListener(this);
+	slide.addChangeListener(this);
+
 	getContentPane().add(pages, BorderLayout.SOUTH);
 
+    }
+
+    public void stateChanged(ChangeEvent e){
+	BoundedRangeModel bound = (BoundedRangeModel)(e.getSource());
+	if(!bound.getValueIsAdjusting()){
+	    
+	    pm.jumpToPage(bound.getValue());
+	}
     }
     
     private void initMenu(){
