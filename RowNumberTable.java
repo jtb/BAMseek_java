@@ -32,6 +32,8 @@ public class RowNumberTable extends JTable
 
 	getColumnModel().getColumn(0).setPreferredWidth(50);
 	setPreferredScrollableViewportSize(getPreferredSize());
+
+	setAutoResizeMode(table.getAutoResizeMode());
     }
 
     @Override

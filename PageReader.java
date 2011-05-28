@@ -5,9 +5,21 @@ public class PageReader {
 
     public PageReader(final String filename){
 	index = new PageIndexer(filename);
-	invalid = index.invalid;
+	//invalid = index.invalid;
 	parser = ParseFactory.NewParse(filename);
     }    
+
+    public boolean update(){
+	return index.update();
+    }
+    public int progress(){
+	return index.progress();
+    }
+    public void finish(){
+	index.finish();
+	invalid = index.invalid;
+	//parser = ParseFactory.NewParse(filename);
+    }
 
     public int getNumPages(){
 	if(index.invalid) return 0;
@@ -46,29 +58,39 @@ public class PageReader {
 
     private class PageIndexer {
 	public static final int PAGE_SIZE = 1000;
+	BaseParse parser = null;
 
 	public PageIndexer(final String filename){
-	    BaseParse parser = ParseFactory.NewParse(filename);
-	    	    
-	    if(parser == null){
-		invalid = true;
-		return;
-	    }
+	    parser = ParseFactory.NewParse(filename);
+	    done = false;
+	    
+	    invalid = (parser == null);
+	}
+	
+	public boolean update(){
+	    if(invalid) return false;
+	    if(done) return false;
 	    
 	    long offset = 0;
-	    int count = 0;
-	    while((offset = parser.getNextRecordIndex()) >= 0){
-		if(count == 0){
-		    pages.add(offset);
-		    //progress.setValue(100*(parser.getProgress()));
-		    //....
-		    
+	    for(int count = 0; count < PAGE_SIZE; count++){
+		if((offset = parser.getNextRecordIndex()) >= 0){
+		    if(count == 0){
+			pages.add(offset);
+		    }
+		}else{
+		    done = true;
+		    return false;
 		}
-		count++;
-		if(count == PAGE_SIZE) count = 0;
 	    }
-	    //progress.setValue(100);
-	    invalid = false;
+	    return true;
+	}
+	
+	public int progress(){
+	    return (int)(100*(parser.getProgress()));
+	}
+	public void finish(){
+	    done = true;
+	    parser = null;
 	}
 
 	public long pageToOffset(int page_no){
@@ -82,6 +104,7 @@ public class PageReader {
 	}
 
 	public boolean invalid = true;
+	private boolean done = false;
 
 	public ArrayList<Long> pages = new ArrayList<Long>();
 	

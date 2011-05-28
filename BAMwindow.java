@@ -1,25 +1,26 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import java.beans.*;
 import java.io.*;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
-//import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumn;
 import javax.swing.event.*;
 
 import java.util.ArrayList;
 
-public class BAMwindow extends JFrame {
+public class BAMwindow extends JFrame implements PropertyChangeListener {
     PageControl pages = null;
     PagingModel pm = null;
     JTable table = null;
     JTextArea header = null;
     JSplitPane jsp = null;
         
-    //ProgressMonitor progressMonitor pm = null;
+    ProgressMonitor progressMonitor = null;
     Task task = null;
     
     class Task extends SwingWorker<Void, Void> {
@@ -29,12 +30,19 @@ public class BAMwindow extends JFrame {
 	}
 	@Override
 	    public Void doInBackground(){
+	    int progress = 0;
+	    setProgress(0);
+	    //do progress
 	    pm = new PagingModel(file);
+	    while(!isCancelled() && pm.update()){
+		setProgress(pm.progress());
+	    }
+	    pm.finish();
+	        
 	    return null;
 	}
 	@Override
 	    public void done(){
-	    
 	    pages = new PageControl();
 	    getContentPane().removeAll();
 	    getContentPane().add(jsp, BorderLayout.CENTER);
@@ -45,18 +53,44 @@ public class BAMwindow extends JFrame {
 	    table.setModel(pm);
 	    setTitle(file);
 
+
+	    for(int i = 0; i < pm.col_sizes.length; i++){
+		TableColumn col = table.getColumnModel().getColumn(i);
+		col.setPreferredWidth(pm.col_sizes[i]*8);
+	    }
+	    
 	    //jsp.setDividerLocation(.2);
 	    //pack();
 	    setVisible(true);
+	    //slide.setValue(slide.getMinimum());
 
-	    System.out.println("done!");
+	    progressMonitor.setProgress(100);
 		    
 	}
     }
 
     protected void openData(final String pathname){
+	progressMonitor = new ProgressMonitor(BAMwindow.this,
+					      "Indexing file.  You may cancel to view the first few lines.",
+					      "", 0, 100);
+        progressMonitor.setProgress(0);
+
 	task = new Task(pathname);
+	task.addPropertyChangeListener(this);
 	task.execute();
+    }
+
+    public void propertyChange(PropertyChangeEvent evt){
+	if("progress" == evt.getPropertyName()){
+	    int progress = (Integer) evt.getNewValue();
+	    progressMonitor.setProgress(progress);
+	    String message = String.format("Completed %d%%.\n", progress);
+	    progressMonitor.setNote(message);
+	    
+	    if(progressMonitor.isCanceled()){
+		task.cancel(true);
+	    }
+	}
     }
 
     BAMwindow(){
@@ -64,18 +98,23 @@ public class BAMwindow extends JFrame {
 	
 	setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	initMenu();
+
+	table = new JTable(pm){
+		public String getToolTipText(MouseEvent e) {
+		    java.awt.Point p = e.getPoint();
+		    int colIndex = columnAtPoint(p);
+		    int rowIndex = rowAtPoint(p);
+		    int realColumnIndex = convertColumnIndexToModel(colIndex);
+		    int realRowIndex = convertRowIndexToModel(rowIndex);
+		    //return "(" + realRowIndex + "," + realColumnIndex + ")";
+		    return pm.getValueAt(realRowIndex, realColumnIndex).toString();
+		}
 		
-	table = new JTable(pm);
+	    };
+	    
+	table.getTableHeader().setForeground(Color.blue);
+
 	table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-	/*
-	try{
-	    //rowTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-	    int vColIndex = 1;
-	    TableColumn col = table.getColumnModel().getColumn(vColIndex);
-	    int width = 300;
-	    col.setPreferredWidth(width);
-	}catch(Exception e){}
-	*/
 
 	JTable rowTable = new RowNumberTable(table);
 	JPanel content = new JPanel();
@@ -122,7 +161,7 @@ public class BAMwindow extends JFrame {
 	PageControl(){
 	    //setLayout(new BorderLayout());
 	    add(new Label("Page Number "));
-	    spinmodel = new SpinnerNumberModel(1, 1, pm.numPages(), 1);
+	    spinmodel = new SpinnerNumberModel(1, 1, Math.max(1, pm.numPages()), 1);
 	    spin = new JSpinner(spinmodel);
 
 	    spinmodel.addChangeListener(new ChangeListener() {
@@ -135,7 +174,7 @@ public class BAMwindow extends JFrame {
 	    numpages = new Label(" / " + pm.numPages());
 	    add(numpages);
 	    
-	    slide = new JSlider(JSlider.HORIZONTAL, 1, pm.numPages(), 1);
+	    slide = new JSlider(JSlider.HORIZONTAL, 1, Math.max(1, pm.numPages()), 1);
 	    slidemodel = slide.getModel();
 	    slidemodel.addChangeListener(new ChangeListener() {
 		    public void stateChanged(ChangeEvent e) {
@@ -146,8 +185,10 @@ public class BAMwindow extends JFrame {
 
 	    add(slide);//, BorderLayout.CENTER);
 	    slide.addChangeListener(this);
+	    //slide.setValue(slide.getMinimum());
 	}
 
+	//change labels
 	public void stateChanged(ChangeEvent e){
 
 	    JSlider event = (JSlider)(e.getSource());
@@ -185,16 +226,63 @@ public class BAMwindow extends JFrame {
 class PagingModel extends AbstractTableModel {
 
     protected ArrayList<String[]> data;
+    public int col_sizes[] = new int[11];
     public String filename = "";
     protected PageReader pr = null;
     protected int column_count = 0;
+    
+    String col_names[] = {
+	"Query Name",
+	"Flag",
+	"Reference Name",
+	"Position",
+	"Map Quality",
+	"Cigar",
+	"Mate Reference",
+	"Mate Position",
+	"Template Length",
+	"Read Sequence",
+	"Read Quality"
+    };
 
     public PagingModel(String filename){
 	this.filename = filename;
 	if(filename.equals("")) return;
 	pr = new PageReader(filename);
-	this.pr = pr;
+    }
+
+    public String getColumnName(int column){
+	if(column >= col_names.length){
+	    return "Tag";
+	}
+	if(column < 0) return "Unknown";
+	return col_names[column];
+    }
+
+    public boolean update(){
+	if(filename.equals("")) return false;
+	return pr.update();
+    }
+    public int progress(){
+	if(filename.equals("")) return 100;
+	return pr.progress();
+    }
+    
+    public void finish(){
+	pr.finish();
 	jumpToPage(1);
+
+	for(int i = 0; i < col_sizes.length; i++){
+	    col_sizes[i] = col_names[i].length();
+	}
+
+	for(int r = 0; r < data.size(); r++){
+	    for(int c = 0; c < Math.min(col_sizes.length, data.get(r).length); c++){
+		if(data.get(r)[c].length() > col_sizes[c]){
+		    col_sizes[c] = data.get(r)[c].length();
+		}
+	    }
+	}
     }
 
     public Object getValueAt(int row, int col) {
@@ -222,6 +310,7 @@ class PagingModel extends AbstractTableModel {
 		data.add(fields);
 		if(column_count < fields.length) column_count = fields.length;
 	    }
+	    
 	    fireTableDataChanged();
 	    return true;
 	}catch(IOException e){
@@ -239,10 +328,9 @@ class PagingModel extends AbstractTableModel {
             return "BAMseek allows you to scroll through large SAM/BAM alignment files.  Please go to \'File > Open\' File to get started.";
 	}
 	
-        if(pr == null){
-            return "Unable to recognize file as BAM or SAM";
+        if(pr == null || pr.invalid){
+            return "Error: Unable to recognize file as BAM or SAM";
 	}
-
         return pr.getHeader();
     }
 
