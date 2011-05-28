@@ -17,9 +17,7 @@ public class BAMseek {
 	
 	javax.swing.SwingUtilities.invokeLater(new Runnable() {
 		public void run() {
-		    BAMwindow bw = new BAMwindow("");
-		    bw.pack();
-		    bw.setVisible(true);
+		    BAMwindow bw = new BAMwindow();
 		}
 	    });
     }

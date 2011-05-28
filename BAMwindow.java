@@ -18,17 +18,54 @@ public class BAMwindow extends JFrame {
     JTable table = null;
     JTextArea header = null;
     JSplitPane jsp = null;
+        
+    //ProgressMonitor progressMonitor pm = null;
+    Task task = null;
     
-    BAMwindow(final String filename){
-	super(filename);
+    class Task extends SwingWorker<Void, Void> {
+	String file = null;
+	Task(final String filename){
+	    file = filename;
+	}
+	@Override
+	    public Void doInBackground(){
+	    pm = new PagingModel(file);
+	    return null;
+	}
+	@Override
+	    public void done(){
+	    
+	    pages = new PageControl();
+	    getContentPane().removeAll();
+	    getContentPane().add(jsp, BorderLayout.CENTER);
+	    getContentPane().add(pages, BorderLayout.SOUTH);
+	    header.setText(pm.getHeader());
+	    header.setCaretPosition(0);
+
+	    table.setModel(pm);
+	    setTitle(file);
+
+	    //jsp.setDividerLocation(.2);
+	    //pack();
+	    setVisible(true);
+
+	    System.out.println("done!");
+		    
+	}
+    }
+
+    protected void openData(final String pathname){
+	task = new Task(pathname);
+	task.execute();
+    }
+
+    BAMwindow(){
+	super("Welcome to BAMseek");
 	
 	setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-	
 	initMenu();
 		
-	pm = new PagingModel(filename);
 	table = new JTable(pm);
-	
 	table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 	/*
 	try{
@@ -41,17 +78,16 @@ public class BAMwindow extends JFrame {
 	*/
 
 	JTable rowTable = new RowNumberTable(table);
-	
 	JPanel content = new JPanel();
 	content.setLayout(new BorderLayout());
-	header = new JTextArea(pm.getHeader());
+	header = new JTextArea("BAMseek allows you to scroll through large SAM/BAM alignment files.  Please go to \'File > Open\' File to get started.");
 	header.setEditable(false);
 	JScrollPane scrollHeader = new JScrollPane(header);
 	JScrollPane scrollTable = new JScrollPane(table);
 	scrollTable.setRowHeaderView(rowTable);
 	scrollTable.setCorner(JScrollPane.UPPER_LEFT_CORNER, rowTable.getTableHeader());
 	content.add(scrollHeader, BorderLayout.CENTER);
-	
+
 	try {
 	    BufferedImage pict = ImageIO.read(new File("BAMseek.png"));
 	    JLabel pictLabel = new JLabel(new ImageIcon(pict));
@@ -61,8 +97,8 @@ public class BAMwindow extends JFrame {
 	jsp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, content, scrollTable);
 	getContentPane().add(jsp, BorderLayout.CENTER);
 	
-	pages = new PageControl();
-	getContentPane().add(pages, BorderLayout.SOUTH);
+	pack();
+	setVisible(true);
     }
 
     private void initMenu(){
@@ -96,7 +132,7 @@ public class BAMwindow extends JFrame {
 		    }
 		});
 	    add(spin);//, BorderLayout.WEST);
-	    numpages = new Label("/" + pm.numPages());
+	    numpages = new Label(" / " + pm.numPages());
 	    add(numpages);
 	    
 	    slide = new JSlider(JSlider.HORIZONTAL, 1, pm.numPages(), 1);
@@ -131,21 +167,12 @@ public class BAMwindow extends JFrame {
 
 		    final String pathname = choose.getSelectedFile().getCanonicalPath();
 		    if(pm == null || pm.filename.equals("")){
-			pm = new PagingModel(pathname);
-			pages = new PageControl();
-			getContentPane().removeAll();
-			getContentPane().add(jsp, BorderLayout.CENTER);
-			getContentPane().add(pages, BorderLayout.SOUTH);
-			header.setText(pm.getHeader());
-			table.setModel(pm);
-			setVisible(true);
+			openData(pathname);
 		    }else{
 			javax.swing.SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-				    BAMwindow bw = new BAMwindow(pathname);
-				    bw.pack();
-				    bw.jsp.setDividerLocation(.2);
-				    bw.setVisible(true);
+				    BAMwindow bw = new BAMwindow();
+				    bw.openData(pathname);
 				}
 			    });
 		    }
