@@ -107,7 +107,8 @@ public class BAMwindow extends JFrame implements PropertyChangeListener {
 		    int realColumnIndex = convertColumnIndexToModel(colIndex);
 		    int realRowIndex = convertRowIndexToModel(rowIndex);
 		    //return "(" + realRowIndex + "," + realColumnIndex + ")";
-		    return pm.getValueAt(realRowIndex, realColumnIndex).toString();
+		    return pm.getToolTip(realRowIndex, realColumnIndex);
+		    //return pm.getValueAt(realRowIndex, realColumnIndex).toString();
 		}
 		
 	    };
@@ -290,6 +291,16 @@ class PagingModel extends AbstractTableModel {
         return data.get(row)[col];
     }
 
+    public String getToolTip(int row, int col) {
+	String ans = getValueAt(row, col).toString();
+	
+	if(col == 1){//Flag
+	    int n = Integer.parseInt(ans);
+	    return prettyPrintFlag(n);
+	}
+	return ans;
+    }
+
     public int getColumnCount() {
 	return column_count;
     }
@@ -332,6 +343,67 @@ class PagingModel extends AbstractTableModel {
             return "Error: Unable to recognize file as BAM or SAM";
 	}
         return pr.getHeader();
+    }
+
+    private String prettyPrintFlag(int flag){
+	if(flag<0) return "";
+	boolean unmapped = false;
+	boolean unmappedmate = false;
+	boolean paired = false;
+	String answer = "<html>";
+	if(flag%2 != 0){
+	    answer+="Read is paired.<br>";
+	    paired = true;
+	}
+	flag = (flag >> 1);
+	if(flag%2 != 0){
+	    answer+="Read mapped in proper pair.<br>";
+	}
+	flag = (flag >> 1);
+	if(flag%2 != 0){
+	    answer+="Read is unmapped.<br>";
+	    unmapped = true;
+	}
+	flag = (flag >> 1);
+	if(flag%2 != 0){
+	    answer+="Mate is unmapped.<br>";
+	    unmappedmate = true;
+	}
+	flag = (flag >> 1);
+	if(flag%2 != 0){
+	    answer+="Read is on reverse strand.<br>";
+	}else if(!unmapped){
+	    answer+="Read is on forward strand.<br>";
+	}
+	flag = (flag >> 1);
+	if(flag%2 != 0){
+	    answer+="Mate is on reverse strand.<br>";
+	}else if(paired && !unmappedmate){
+	    answer+="Mate is on forward strand.<br>";
+	}
+	flag = (flag >> 1);
+	if(flag%2 != 0){
+	    answer+="Read is first in template.<br>";
+	}
+	flag = (flag >> 1);
+	if(flag%2 != 0){
+	    answer+="Read is last in template.<br>";
+	}
+	flag = (flag >> 1);
+	if(flag%2 != 0){
+	    answer+="Read is not primary alignment.<br>";
+	}
+	flag = (flag >> 1);
+	if(flag%2 != 0){
+	    answer+="Read fails platform/vendor quality checks.<br>";
+	}
+	flag = (flag >> 1);
+	if(flag%2 != 0){
+	    answer+="Read is PCR or optical duplicate.<br>";
+	}
+
+	answer += "</html>";
+	return answer;
     }
 
 }
