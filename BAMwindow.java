@@ -215,7 +215,7 @@ public class BAMwindow extends JFrame implements PropertyChangeListener {
 		try {
 
 		    final String pathname = choose.getSelectedFile().getCanonicalPath();
-		    if(pm == null || pm.filename.equals("")){
+		    if(pm == null || pm.filename.equals("") || pm.getHeader() == null){
 			openData(pathname);
 		    }else{
 			javax.swing.SwingUtilities.invokeLater(new Runnable() {
