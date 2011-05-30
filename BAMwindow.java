@@ -48,16 +48,19 @@ public class BAMwindow extends JFrame implements PropertyChangeListener {
 	    getContentPane().removeAll();
 	    getContentPane().add(jsp, BorderLayout.CENTER);
 	    getContentPane().add(pages, BorderLayout.SOUTH);
-	    header.setText(pm.getHeader());
+	    String header_text = pm.getHeader();
+	    if(header_text != null){
+		header.setText(header_text);
+	    }
 	    header.setCaretPosition(0);
-
+	    
 	    table.setModel(pm);
 	    setTitle(file);
 
 
-	    for(int i = 0; i < pm.col_sizes.length; i++){
+	    for(int i = 0; i < Math.min(pm.getColumnCount(), pm.col_sizes.length); i++){
 		TableColumn col = table.getColumnModel().getColumn(i);
-		col.setPreferredWidth(pm.col_sizes[i]*8);
+		col.setPreferredWidth(pm.col_sizes[i]*8+10);
 	    }
 	    
 	    //jsp.setDividerLocation(.2);
@@ -66,7 +69,10 @@ public class BAMwindow extends JFrame implements PropertyChangeListener {
 	    //slide.setValue(slide.getMinimum());
 
 	    progressMonitor.setProgress(100);
-		    
+
+	    if(header_text == null){
+		JOptionPane.showMessageDialog(BAMwindow.this, "Error: Unable to recognize file as BAM or SAM.");
+	    }
 	}
     }
 
@@ -302,6 +308,10 @@ class PagingModel extends AbstractTableModel {
 	if(col == 5){//Cigar
 	    return prettyPrintCigar(ans);
 	}
+	if(col == 9 && getColumnCount() > 10){//BaseQual
+	    return prettyPrintBaseQual(ans, getValueAt(row, 10).toString());
+	}
+
 	return ans;
     }
 
@@ -344,7 +354,7 @@ class PagingModel extends AbstractTableModel {
 	}
 	
         if(pr == null || pr.invalid){
-            return "Error: Unable to recognize file as BAM or SAM";
+	    return null;
 	}
         return pr.getHeader();
     }
@@ -439,9 +449,27 @@ class PagingModel extends AbstractTableModel {
 	    
 	}
 	
-
 	ans += "</html>";
 	return ans;
     }
+    
+    private String prettyPrintBaseQual(String bases, String quals){
+	if(bases.equals("*") || bases.length() != quals.length()) return bases;
+	String hexcolor = "<html>";
+	for(int i = 0; i < bases.length(); i++){
+	    hexcolor += "<font size=\"5\" color=\"";
+	    int c = (int)quals.charAt(i) - 33;
+	    if(c < 20) hexcolor += "#E9CFEC";else hexcolor += "#571B7e";
+
+	    hexcolor += "\">";
+	    hexcolor += bases.charAt(i);
+	    hexcolor += "</font>";
+	}
+	hexcolor += "</html>";
+	return hexcolor;
+    }
+	
+
+
 
 }

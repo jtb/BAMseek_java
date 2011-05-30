@@ -9,7 +9,6 @@ public class ParseFactory{
 	if(ParseFactory.isSAM(filename)){
 	    return new SAMParse(filename);
 	}
-	System.out.println("it is nothing");
 	return null;
     }
 
