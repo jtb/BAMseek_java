@@ -141,12 +141,14 @@ public class BAMParse extends BaseParse {
 	    	   
 	    String QUAL = new String("*");
 	    if(l_seq != 0){
+		boolean absent = true;
 		byte qual[] = new byte[l_seq];
 		bgzf.read(qual);
 		for(int i = 0; i < qual.length; i++){
+		    if(qual[i] != -1) absent = false;
 		    qual[i] += 33;
 		}
-		QUAL = new String(qual);
+		if(!absent) QUAL = new String(qual);
 	    }
 	    block_size -= l_seq;
 	    
