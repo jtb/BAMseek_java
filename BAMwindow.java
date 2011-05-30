@@ -10,6 +10,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.event.*;
+import java.util.regex.Pattern;
 
 import java.util.ArrayList;
 
@@ -298,6 +299,9 @@ class PagingModel extends AbstractTableModel {
 	    int n = Integer.parseInt(ans);
 	    return prettyPrintFlag(n);
 	}
+	if(col == 5){//Cigar
+	    return prettyPrintCigar(ans);
+	}
 	return ans;
     }
 
@@ -404,6 +408,40 @@ class PagingModel extends AbstractTableModel {
 
 	answer += "</html>";
 	return answer;
+    }
+
+    private String prettyPrintCigar(String cigar){
+	String ans = "<html>";
+	if(cigar.equals("*")){
+	    ans += "No alignment information<br>";
+	}else{
+	    Pattern p = Pattern.compile("\\D");
+	    String nums[] = p.split(cigar);
+	    p = Pattern.compile("\\d+");
+	    String vals[] = p.split(cigar);
+	    
+
+	    for(int i = 0; i < nums.length; i++){
+		ans += (nums[i] + " ");
+		switch(vals[i+1].charAt(0)){
+		case 'M' : case 'm' : ans += "Match/Mismatch<br>"; break;
+		case 'I' : case 'i' : ans += "Insertion to reference<br>"; break;
+		case 'D' : case 'd' : ans += "Deletion from reference<br>"; break;
+		case 'N' : case 'n' : ans += "Skipped region from reference<br>"; break;
+		case 'S' : case 's' : ans += "Soft clipping (clipped sequence present)<br>"; break;
+		case 'H' : case 'h' : ans += "Hard clipping (clipped sequence removed)<br>"; break;
+		case 'P' : case 'p' : ans += "Padding (silent deletion from padded reference)<br>"; break;
+		case '=' : ans += "Match<br>"; break;
+		case 'X' : case 'x' : ans += "Mismatch<br>"; break;
+		default : ans += (vals[i] + "<br>"); break;
+		}
+	    }
+	    
+	}
+	
+
+	ans += "</html>";
+	return ans;
     }
 
 }
