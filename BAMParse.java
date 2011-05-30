@@ -173,7 +173,7 @@ public class BAMParse extends BaseParse {
 		block_size -= 1;
 		String value = getVal(val_type);
 		
-		if(val_type[0] != 'A' && val_type[0] != 'f' && val_type[0] != 'Z' && val_type[0] != 'H'){
+		if(val_type[0] != 'A' && val_type[0] != 'B' && val_type[0] != 'f' && val_type[0] != 'Z' && val_type[0] != 'H'){
 		    val_type[0] = 'i';
 		}
 		ans  = ans + new String(val_type) + ":" + value;
