@@ -3,8 +3,9 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.beans.*;
 import java.io.*;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
+//import javax.imageio.ImageIO;
+//import java.awt.image.BufferedImage;
+import javax.swing.ImageIcon;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
@@ -135,19 +136,26 @@ public class BAMwindow extends JFrame implements PropertyChangeListener {
 	scrollTable.setCorner(JScrollPane.UPPER_LEFT_CORNER, rowTable.getTableHeader());
 	content.add(scrollHeader, BorderLayout.CENTER);
 
-	try {
-	    BufferedImage pict = ImageIO.read(new File("BAMseek.png"));
-	    JLabel pictLabel = new JLabel(new ImageIcon(pict));
-	    content.add(pictLabel, BorderLayout.WEST);
-	} catch(IOException e){
-	    e.printStackTrace();
-	}
-
+	ImageIcon icon = createImageIcon("images/BAMseek.png", "bamicon");
+	JLabel pictLabel = new JLabel(icon);
+	content.add(pictLabel, BorderLayout.WEST);
+	
 	jsp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, content, scrollTable);
 	getContentPane().add(jsp, BorderLayout.CENTER);
 	
 	pack();
 	setVisible(true);
+    }
+
+    protected ImageIcon createImageIcon(String path,
+					String description) {
+	java.net.URL imgURL = getClass().getResource(path);
+	if (imgURL != null) {
+	    return new ImageIcon(imgURL, description);
+	} else {
+	    System.err.println("Couldn't find file: " + path);
+	    return null;
+	}
     }
 
     private void initMenu(){
