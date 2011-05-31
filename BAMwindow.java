@@ -21,6 +21,7 @@ public class BAMwindow extends JFrame implements PropertyChangeListener {
     JTable table = null;
     JTextArea header = null;
     JSplitPane jsp = null;
+    String pwd = null;
         
     ProgressMonitor progressMonitor = null;
     Task task = null;
@@ -169,14 +170,17 @@ public class BAMwindow extends JFrame implements PropertyChangeListener {
 	
 	JMenu helpMenu = new JMenu("Help");
 	menuBar.add(helpMenu);
+	
+	/**
 	JMenuItem bam_item = new JMenuItem("Open example BAM file");
 	bam_item.addActionListener(new OpenBAM("examples/ex1.bam"));
 	helpMenu.add(bam_item);
 	JMenuItem sam_item = new JMenuItem("Open example SAM file");
 	sam_item.addActionListener(new OpenBAM("examples/ex1.sam"));
 	helpMenu.add(sam_item);
-	
 	helpMenu.addSeparator();
+	**/
+
 	JMenuItem splash = new JMenuItem("Show splash screen");
 	splash.addActionListener(new ShowSplash());
 	helpMenu.add(splash);
@@ -274,12 +278,18 @@ public class BAMwindow extends JFrame implements PropertyChangeListener {
     class OpenAction implements ActionListener {
 	public void actionPerformed(ActionEvent ae){
 	    
-	    JFileChooser choose = new JFileChooser();
+	    JFileChooser choose;
+	    if(pwd == null){
+		choose = new JFileChooser();
+	    }else{
+		choose = new JFileChooser(pwd);
+	    }
 	    if(choose.showOpenDialog(BAMwindow.this) == JFileChooser.APPROVE_OPTION){
 		
 		try {
 
 		    final String pathname = choose.getSelectedFile().getCanonicalPath();
+		    pwd = pathname;
 		    if(pm == null || pm.filename.equals("") || pm.getHeader() == null){
 			openData(pathname);
 		    }else{

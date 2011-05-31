@@ -17,6 +17,7 @@ public class BAMParse extends BaseParse {
 	try{
 	    file_size = (new File(filename)).length();
 	}catch(Exception e){
+	    e.printStackTrace();
 	    file_size = 1;
 	}
 
@@ -39,6 +40,7 @@ public class BAMParse extends BaseParse {
 	    String magic = new String(arr);
 	    return magic.equals("BAM\1");
 	}catch(IOException ie){
+	    ie.printStackTrace();
 	    return false;
 	}
     }
