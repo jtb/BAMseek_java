@@ -454,7 +454,7 @@ class PagingModel extends AbstractTableModel {
     }
     
     private String prettyPrintBaseQual(String bases, String quals){
-	if(bases.equals("*") || bases.length() != quals.length()) return bases;
+	if(bases.equals("*") || bases.length() != quals.length()) return ("<html><font size=\"5\">" + bases + "</font></html>");
 	String hexcolor = "<html>";
 	for(int i = 0; i < bases.length(); i++){
 	    hexcolor += "<font size=\"5\" color=\"";
