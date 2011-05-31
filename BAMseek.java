@@ -10,10 +10,10 @@ public class BAMseek {
     public static void main(String args[]) {
 	if (System.getProperty("os.name").equals("Mac OS X")){
 	    System.setProperty("apple.laf.useScreenMenuBar", "true");
-	    try{
-		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-	    }catch(Exception e){}
 	}
+	try{
+	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	}catch(Exception e){}
 	
 	javax.swing.SwingUtilities.invokeLater(new Runnable() {
 		public void run() {

@@ -139,7 +139,9 @@ public class BAMwindow extends JFrame implements PropertyChangeListener {
 	    BufferedImage pict = ImageIO.read(new File("BAMseek.png"));
 	    JLabel pictLabel = new JLabel(new ImageIcon(pict));
 	    content.add(pictLabel, BorderLayout.WEST);
-	} catch(IOException e){}
+	} catch(IOException e){
+	    e.printStackTrace();
+	}
 
 	jsp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, content, scrollTable);
 	getContentPane().add(jsp, BorderLayout.CENTER);
