@@ -38,12 +38,13 @@ public class BAMwindow extends JFrame implements PropertyChangeListener {
 	    while(!isCancelled() && pm.update()){
 		setProgress(pm.progress());
 	    }
-	    pm.finish();
+	    //pm.finish();
 	        
 	    return null;
 	}
 	@Override
 	    public void done(){
+	    pm.finish();
 	    pages = new PageControl();
 	    getContentPane().removeAll();
 	    getContentPane().add(jsp, BorderLayout.CENTER);
@@ -56,7 +57,6 @@ public class BAMwindow extends JFrame implements PropertyChangeListener {
 	    
 	    table.setModel(pm);
 	    setTitle(file);
-
 
 	    for(int i = 0; i < Math.min(pm.getColumnCount(), pm.col_sizes.length); i++){
 		TableColumn col = table.getColumnModel().getColumn(i);
@@ -280,19 +280,21 @@ class PagingModel extends AbstractTableModel {
 	pr.finish();
 	jumpToPage(1);
 
+	
 	for(int i = 0; i < col_sizes.length; i++){
 	    col_sizes[i] = col_names[i].length();
 	}
 
 	for(int r = 0; r < data.size(); r++){
 	    for(int c = 0; c < Math.min(col_sizes.length, data.get(r).length); c++){
+		
 		if(data.get(r)[c].length() > col_sizes[c]){
 		    col_sizes[c] = data.get(r)[c].length();
 		}
 	    }
 	}
     }
-
+    
     public Object getValueAt(int row, int col) {
     	if(data.get(row).length <= col) return "";
         return data.get(row)[col];
