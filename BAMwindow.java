@@ -160,11 +160,27 @@ public class BAMwindow extends JFrame implements PropertyChangeListener {
 
     private void initMenu(){
 	JMenuBar menuBar = new JMenuBar();
+	
 	JMenu fileMenu = new JMenu("File");
 	menuBar.add(fileMenu);
 	JMenuItem item = new JMenuItem("Open File...");
 	item.addActionListener(new OpenAction());
 	fileMenu.add(item);
+	
+	JMenu helpMenu = new JMenu("Help");
+	menuBar.add(helpMenu);
+	JMenuItem bam_item = new JMenuItem("Open example BAM file");
+	bam_item.addActionListener(new OpenBAM("examples/ex1.bam"));
+	helpMenu.add(bam_item);
+	JMenuItem sam_item = new JMenuItem("Open example SAM file");
+	sam_item.addActionListener(new OpenBAM("examples/ex1.sam"));
+	helpMenu.add(sam_item);
+	
+	helpMenu.addSeparator();
+	JMenuItem splash = new JMenuItem("Show splash screen");
+	splash.addActionListener(new ShowSplash());
+	helpMenu.add(splash);
+
 	setJMenuBar(menuBar);
     }
     
@@ -215,7 +231,46 @@ public class BAMwindow extends JFrame implements PropertyChangeListener {
 	    }
 	}
     }
-    
+
+    class ShowSplash implements ActionListener {
+	public void actionPerformed(ActionEvent ae){
+	    JFrame splash = new JFrame("About BAMseek");
+	    JPanel panel = new JPanel();
+	    ImageIcon icon = createImageIcon("images/logo.png", "logo");
+	    JLabel pictLabel = new JLabel(icon);
+	    panel.add(pictLabel);
+	    splash.getContentPane().add(panel);
+	    
+	    splash.pack();
+	    splash.setVisible(true);
+	}
+    }
+
+    class OpenBAM implements ActionListener {
+	String pathname = "";
+	OpenBAM(String filename){
+	    super();
+	    try{
+		pathname = (new File(filename)).getCanonicalPath();
+	    }catch(IOException e){
+		e.printStackTrace();
+	    }
+	}
+
+	public void actionPerformed(ActionEvent ae){
+	    if(pm == null || pm.filename.equals("") || pm.getHeader() == null){
+		openData(pathname);
+	    }else{
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+			    BAMwindow bw = new BAMwindow();
+			    bw.openData(pathname);
+			}
+		    });
+	    }
+	}
+    }
+
     class OpenAction implements ActionListener {
 	public void actionPerformed(ActionEvent ae){
 	    
@@ -368,7 +423,7 @@ class PagingModel extends AbstractTableModel {
         if(pr == null || pr.invalid){
 	    return null;
 	}
-        return pr.getHeader();
+	return pr.getHeader();
     }
 
     private String prettyPrintFlag(int flag){

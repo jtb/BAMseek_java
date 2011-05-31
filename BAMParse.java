@@ -8,7 +8,6 @@ import java.nio.ByteOrder;
 public class BAMParse extends BaseParse {
     BlockCompressedInputStream bgzf = null;
     HashMap<Integer, String> refmap = null;
-    String header = null;
     int block_size = 0;
     long file_size = 1;
 
