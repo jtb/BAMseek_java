@@ -104,7 +104,7 @@ public class BAMwindow extends JFrame implements PropertyChangeListener {
     }
 
     BAMwindow(){
-	super("Welcome to BAMseek");
+	super("BAMseek: Large BAM/SAM File Viewer");
 	
 	setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	initMenu();
@@ -130,7 +130,7 @@ public class BAMwindow extends JFrame implements PropertyChangeListener {
 	JTable rowTable = new RowNumberTable(table);
 	JPanel content = new JPanel();
 	content.setLayout(new BorderLayout());
-	header = new JTextArea("BAMseek allows you to scroll through large SAM/BAM alignment files.  Please go to \'File > Open\' File to get started.");
+	header = new JTextArea("Welcome!\n\nBAMseek allows you to scroll through large SAM/BAM alignment files.  Please go to \'File > Open File ...' to get started.\n\nFor updates, visit http://code.google.com/p/bamseek/");
 	header.setEditable(false);
 	JScrollPane scrollHeader = new JScrollPane(header);
 	JScrollPane scrollTable = new JScrollPane(table);
