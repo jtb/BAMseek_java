@@ -273,7 +273,8 @@ public class BAMParse extends BaseParse {
 		buffer = new byte[1];
                 bgzf.read(buffer);
 		block_size -= 1;
-		ans = new String(buffer);
+		num = (int)buffer[0];
+		ans = "" + num;
                 break;
 	    case 'C':
 		buffer = new byte[1];

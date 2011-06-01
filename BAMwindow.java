@@ -1,3 +1,4 @@
+import java.util.HashMap;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -313,7 +314,8 @@ class PagingModel extends AbstractTableModel {
     public String filename = "";
     protected PageReader pr = null;
     protected int column_count = 0;
-    
+    protected HashMap<String, String> tagmap = new HashMap<String, String>(35);
+
     String col_names[] = {
 	"Query Name",
 	"Flag",
@@ -329,6 +331,7 @@ class PagingModel extends AbstractTableModel {
     };
 
     public PagingModel(String filename){
+	initTags();
 	this.filename = filename;
 	if(filename.equals("")) return;
 	pr = new PageReader(filename);
@@ -387,6 +390,9 @@ class PagingModel extends AbstractTableModel {
 	}
 	if(col == 9 && getColumnCount() > 10){//BaseQual
 	    return prettyPrintBaseQual(ans, getValueAt(row, 10).toString());
+	}
+	if(col > 10){//Tag
+	    return prettyPrintTag(ans);
 	}
 
 	return ans;
@@ -545,8 +551,55 @@ class PagingModel extends AbstractTableModel {
 	hexcolor += "</html>";
 	return hexcolor;
     }
+
+    private String prettyPrintTag(String tag){
+	String[] fields = tag.split(":");
+	if(fields.length < 3) return tag;
+	String ans = "";
 	
+	String descript = null;
+	if((descript = tagmap.get(fields[0])) == null){
+	    descript = fields[0];
+	}
+	return (descript + ": " + fields[2]);
+    }
 
-
-
+    private void initTags(){
+	tagmap.put("AM", "Smallest template-independent mapping quality of fragments in the rest");
+	tagmap.put("AS", "Alignment score");
+	tagmap.put("BQ", "Offset to base alignment quality (BAQ)");
+	tagmap.put("CC", "Reference name of the next hit");
+	tagmap.put("CM", "Edit distance between the color sequence and the color reference");
+	tagmap.put("CP", "Leftmost coordinate of the next hit");
+	tagmap.put("CQ", "Color read quality");
+	tagmap.put("CS", "Color read sequence");
+	tagmap.put("E2", "The 2nd most likely base calls");
+	tagmap.put("FI", "The index of fragment in the template");
+	tagmap.put("FS", "Fragment suffix");
+	tagmap.put("FZ", "Flow signal intensities");
+	tagmap.put("LB", "Library");
+	tagmap.put("H0", "Number of perfect hits");
+	tagmap.put("H1", "Number of 1-difference hits");
+	tagmap.put("H2", "Number of 2-difference hits");
+	tagmap.put("HI", "Query hit index");
+	tagmap.put("IH", "Number of stored alignments in SAM that contains the query in the current record");
+	tagmap.put("MD", "String for mismatching positions");
+	tagmap.put("MQ", "Mapping quality of the mate fragment");
+	tagmap.put("NH", "Number of alignments of query read");
+	tagmap.put("NM", "Edit distance to the reference");
+	tagmap.put("OQ", "Original base quality");
+	tagmap.put("OP", "Original mapping position");
+	tagmap.put("OC", "Original CIGAR");
+	tagmap.put("PG", "Program");
+	tagmap.put("PQ", "Phred likelihood of the template");
+	tagmap.put("PU", "Platform unit");
+	tagmap.put("Q2", "Phred quality of the mate fragment");
+	tagmap.put("R2", "Sequence of the mate fragment in the template");
+	tagmap.put("RG", "Read group");
+	tagmap.put("SM", "Template-independent mapping quality");
+	tagmap.put("TC", "Number of fragments in the template");
+	tagmap.put("U2", "Phred probility of the 2nd call being wrong conditional on the best being wrong");
+	tagmap.put("UQ", "Phred likelihood of the fragment");
+    }
+	
 }
