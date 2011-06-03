@@ -59,9 +59,11 @@ public class BAMwindow extends JFrame implements PropertyChangeListener {
 	    table.setModel(pm);
 	    setTitle(file);
 
-	    for(int i = 0; i < Math.min(pm.getColumnCount(), pm.col_sizes.length); i++){
-		TableColumn col = table.getColumnModel().getColumn(i);
-		col.setPreferredWidth(pm.col_sizes[i]*8+10);
+	    for(int i = 0; i < pm.col_sizes.length; i++){
+		if(pm.col_sizes[i] > 0){
+		    TableColumn col = table.getColumnModel().getColumn(i);
+		    col.setPreferredWidth(pm.col_sizes[i]*8+10);
+		}
 	    }
 	    
 	    //jsp.setDividerLocation(.2);
@@ -308,6 +310,7 @@ public class BAMwindow extends JFrame implements PropertyChangeListener {
 class PagingModel extends AbstractTableModel {
 
     protected ArrayList<String[]> data;
+    //public ArrayList<Integer> col_sizes = new ArrayList<Integer>();
     public int col_sizes[] = null;
     public String filename = "";
     protected PageReader pr = null;
@@ -336,12 +339,28 @@ class PagingModel extends AbstractTableModel {
 	pr.finish();
 	jumpToPage(1);
 
-	col_sizes = new int[pr.getNumColumnLabels()];
-	for(int i = 0; i < col_sizes.length; i++){
-	    //col_sizes[i] = pr.getNumColumnLabels();
-	    col_sizes[i] = pr.getColumnName(i).length();
+	col_sizes = new int[column_count];
+	for(int i = 0; i < column_count; i++){
+	    col_sizes[i] = 0;
 	}
 
+	for(int r = 0; r < data.size(); r++){
+	    for(int c = 0; c < data.get(r).length; c++){
+		if(data.get(r)[c].length() > col_sizes[c]){
+		    col_sizes[c] = data.get(r)[c].length();
+		}
+	    }
+	}
+
+	//col_sizes = new int[pr.getNumColumnLabels()];
+	for(int i = 0; i < Math.min(column_count, pr.getNumColumnLabels()); i++){
+	    //col_sizes[i] = pr.getNumColumnLabels();
+	    if(pr.getColumnName(i).length() > col_sizes[i]){
+		col_sizes[i] = pr.getColumnName(i).length();
+	    }
+	}
+
+	/**
 	for(int r = 0; r < data.size(); r++){
 	    for(int c = 0; c < Math.min(col_sizes.length, data.get(r).length); c++){
 		
@@ -350,6 +369,7 @@ class PagingModel extends AbstractTableModel {
 		}
 	    }
 	}
+	**/
     }
     
     public Object getValueAt(int row, int col) {

@@ -20,6 +20,6 @@ public abstract class BaseParse {
     public String getFilename() {return filename; }
 
     public String getToolTip(final String value, int row, int col, final String next_value){ return value; }
-    public String getColumnName(int col){ return "Insert Name Here"; }
+    public String getColumnName(int col){ return ""; }
     public int getNumColumnLabels() { return 0; }
 }
