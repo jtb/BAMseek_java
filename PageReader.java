@@ -21,6 +21,17 @@ public class PageReader {
 	//parser = ParseFactory.NewParse(filename);
     }
 
+    public String getColumnName(int column){
+	return parser.getColumnName(column);
+    }
+    public int getNumColumnLabels(){
+	return parser.getNumColumnLabels();
+    }
+
+    public String getToolTip(final String value, int row, int col, final String next_value){
+	return parser.getToolTip(value, row, col, next_value);
+    }
+
     public int getNumPages(){
 	if(index.invalid) return 0;
 	return index.numPages();

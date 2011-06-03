@@ -5,7 +5,7 @@ import net.sf.samtools.util.BlockCompressedFilePointerUtil;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-public class BAMParse extends BaseParse {
+public class BAMParse extends AlignParse {
     BlockCompressedInputStream bgzf = null;
     HashMap<Integer, String> refmap = null;
     int block_size = 0;

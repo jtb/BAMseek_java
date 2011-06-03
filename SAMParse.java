@@ -1,7 +1,7 @@
 import java.util.*;
 import java.io.*;
 
-public class SAMParse extends BaseParse {
+public class SAMParse extends AlignParse {
     
     private static final int BUFF_SIZE = 1024*128;
     private static final byte[] buffer = new byte[BUFF_SIZE];
