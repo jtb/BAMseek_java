@@ -22,13 +22,16 @@ public class PageReader {
     }
 
     public String getColumnName(int column){
+	if(invalid) return "";
 	return parser.getColumnName(column);
     }
     public int getNumColumnLabels(){
+	if(invalid) return 0;
 	return parser.getNumColumnLabels();
     }
 
     public String getToolTip(final String value, int row, int col, final String[] other_values){
+	if(invalid) return "";
 	return parser.getToolTip(value, row, col, other_values);
     }
 

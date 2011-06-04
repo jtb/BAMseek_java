@@ -60,6 +60,7 @@ public abstract class AlignParse extends BaseParse {
         return col_names[col];
     }
     public int getNumColumnLabels(){
+	if(col_names == null) return 0;
 	return col_names.length;
     }
 

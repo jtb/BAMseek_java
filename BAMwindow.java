@@ -290,14 +290,16 @@ public class BAMwindow extends JFrame implements PropertyChangeListener {
 		try {
 
 		    final String pathname = choose.getSelectedFile().getCanonicalPath();
-		    pwd = pathname;
+		    
 		    if(pm == null || pm.filename.equals("") || pm.getHeader() == null){
 			openData(pathname);
+			pwd = pathname;
 		    }else{
 			javax.swing.SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 				    BAMwindow bw = new BAMwindow();
 				    bw.openData(pathname);
+				    bw.pwd = pathname;
 				}
 			    });
 		    }
@@ -339,6 +341,7 @@ class PagingModel extends AbstractTableModel {
 	pr.finish();
 	jumpToPage(1);
 
+		
 	col_sizes = new int[column_count];
 	for(int i = 0; i < column_count; i++){
 	    col_sizes[i] = 0;
