@@ -9,6 +9,9 @@ public class ParseFactory{
 	if(ParseFactory.isSAM(filename)){
 	    return new SAMParse(filename);
 	}
+	if(ParseFactory.isVCF(filename)){
+	    return new VCFParse(filename);
+	}
 	return null;
     }
 
@@ -27,8 +30,6 @@ public class ParseFactory{
 	}catch(Throwable t){
 	    return false;
 	}
-	
-	
     }
 
     public static boolean isSAM(final String filename){
@@ -55,6 +56,20 @@ public class ParseFactory{
 	    return false;
 	}
 	
+	return false;
+    }
+
+    public static boolean isVCF(final String filename){
+	try {
+	    BufferedReader in = new BufferedReader(new FileReader(filename));
+	    String line = in.readLine();
+	    in.close();
+	    if(line != null && line.indexOf("##fileformat=") >= 0){
+		return true;
+	    }
+	}catch(Exception ie){
+	    return false;
+	}
 	return false;
     }
     

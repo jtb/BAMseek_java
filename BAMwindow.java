@@ -379,11 +379,13 @@ class PagingModel extends AbstractTableModel {
 
     public String getToolTip(int row, int col) {
 	String value = getValueAt(row, col).toString();
-	String next_value = "";
-	if(getColumnCount() > col + 1){
-	    next_value = getValueAt(row, col+1).toString();
-	}
-	return pr.getToolTip(value, row, col, next_value);
+	String other_values[] = data.get(row); 
+	
+	//String next_value = "";
+	//if(getColumnCount() > col + 1){
+	//  next_value = getValueAt(row, col+1).toString();
+	//}
+	return pr.getToolTip(value, row, col, other_values);
     }
 
     public int getColumnCount() {

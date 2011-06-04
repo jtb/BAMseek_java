@@ -15,7 +15,6 @@ public class SAMParse extends AlignParse {
 
 	try {
 	    filein = new RandomAccessFile(filename, "r");
-	    filesize = filein.length();
 	    parseHeader();
 	    file_pos = filein.getFilePointer();
 	}catch(IOException ie){}
@@ -93,7 +92,6 @@ public class SAMParse extends AlignParse {
 	
     }
 
-    private long filesize;
     private long file_pos;
 
     private RandomAccessFile filein;

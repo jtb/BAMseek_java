@@ -28,8 +28,8 @@ public class PageReader {
 	return parser.getNumColumnLabels();
     }
 
-    public String getToolTip(final String value, int row, int col, final String next_value){
-	return parser.getToolTip(value, row, col, next_value);
+    public String getToolTip(final String value, int row, int col, final String[] other_values){
+	return parser.getToolTip(value, row, col, other_values);
     }
 
     public int getNumPages(){

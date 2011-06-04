@@ -19,7 +19,7 @@ public abstract class BaseParse {
     public String getHeader() { return header; }
     public String getFilename() {return filename; }
 
-    public String getToolTip(final String value, int row, int col, final String next_value){ return value; }
+    public String getToolTip(final String value, int row, int col, final String[] other_values){ return value; }
     public String getColumnName(int col){ return ""; }
     public int getNumColumnLabels() { return 0; }
 }

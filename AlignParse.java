@@ -30,7 +30,7 @@ public abstract class AlignParse extends BaseParse {
 
     public abstract double getProgress();
     
-    public String getToolTip(final String value, int row, int col, final String next_value){
+    public String getToolTip(final String value, int row, int col, final String[] other_values){
 	if(col == 1){//Flag
 	    int n = Integer.parseInt(value);
             return prettyPrintFlag(n);
@@ -38,9 +38,13 @@ public abstract class AlignParse extends BaseParse {
         if(col == 5){//Cigar
 	    return prettyPrintCigar(value);
         }
-        if(col == 9 && !next_value.equals("")){//BaseQual
-	    return prettyPrintBaseQual(value, next_value);
+	if(col == 9 && other_values.length > 10){//0-10+
+	    String qual = other_values[10];
+	    return prettyPrintBaseQual(value, qual);
 	}
+        //if(col == 9 && !next_value.equals("")){//BaseQual
+	//  return prettyPrintBaseQual(value, next_value);
+	//}
         if(col > 10){//Tag
 	    return prettyPrintTag(value);
         }
