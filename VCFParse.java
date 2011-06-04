@@ -168,15 +168,15 @@ public class VCFParse extends BaseParse {
 	if(values.length < 1) return value;
 	if(formats.length < values.length) return value;
 
-	String ans = "<html>";
+	String ans = "";
 
 	for(int i = 0; i < values.length; i++){
-	    if(formats[i] == "GT"){
+	    if(formats[i].equals("GT")){
 		ans += "Genotype";
 		String alleles[] = values[i].split("/");
 		if(alleles.length != 2){
-		    alleles = values[i].split("|");
-		    if(alleles.length != 2){
+		    alleles = values[i].split("\\|");
+		    if(alleles.length == 2){
 			ans += " (Phased) ";
 		    }
 		}else{
@@ -191,30 +191,31 @@ public class VCFParse extends BaseParse {
 		    if(val0 == 0){
 			ans += (reference + ",");
 		    }
-		    else if(val0 < 0 || val0 > alts.length){
+		    else if(val0 < 1 || val0 > alts.length){
 			ans += "unknown,";
 		    }else{
-			ans += (alts[val0] + ",");
+			ans += (alts[val0-1] + ",");
 		    }
+		    
 		    if(val1 == 0){
 			ans += reference;
 		    }
-		    else if(val1 < 0 || val1 > alts.length){
+		    else if(val1 < 1 || val1 > alts.length){
 			ans += "unknown";
 		    }else{
-			ans += alts[val1];
+			ans += alts[val1-1];
 		    }
 		}
 		
 	    }
-	    else if(formats[i] == "DP"){
+	    else if(formats[i].equals("DP")){
 		ans += ("Sample Depth " + values[i]);
 		
 	    }
-	    else if(formats[i] == "FT"){
+	    else if(formats[i].equals("FT")){
 		ans += ("Genotype Filter " + values[i]);
 	    }
-	    else if(formats[i] == "GL"){
+	    else if(formats[i].equals("GL")){
 		ans += "Log10-scaled Likelihoods ";
 		String nums[] = values[i].split(",");
 		if(nums.length != 3){
@@ -226,16 +227,20 @@ public class VCFParse extends BaseParse {
 		}
 		
 	    }
-	    else if(formats[i] == "GQ"){
+	    else if(formats[i].equals("GQ")){
 		ans += ("Phred Genotype Quality " + values[i]);
 	    }
-	    else if(formats[i] == "HQ"){
+	    else if(formats[i].equals("HQ")){
 		ans += ("Phred Haplotype Qualities " + values[i]);
 	    }
-	    ans += "<br>";
+	    ans += "BREAKEDLINED";
 	}
-	ans += "</html>";
-	return ans;
+	
+	ans = ans.replaceAll(">", "&gt;");
+	ans = ans.replaceAll("<", "&lt;");
+	ans = ans.replaceAll("BREAKEDLINED", "<br>");
+	return ("<html>" + ans + "</html>");
+	
     }
 
     public String getColumnName(int col){ 
