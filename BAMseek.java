@@ -17,6 +17,7 @@ public class BAMseek {
 	
 	javax.swing.SwingUtilities.invokeLater(new Runnable() {
 		public void run() {
+		    ToolTipManager.sharedInstance().setDismissDelay(60000);
 		    BAMwindow bw = new BAMwindow();
 		}
 	    });
