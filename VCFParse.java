@@ -9,7 +9,8 @@ public class VCFParse extends BaseParse {
     private int buffer_size;
 
     private long file_pos;
-    private RandomAccessFile filein;
+    //private RandomAccessFile filein;
+    private LargeFileReader filein;
 
     String col_names[] =  {
 	"Chromosome",
@@ -30,11 +31,14 @@ public class VCFParse extends BaseParse {
 	file_pos = 0;
 
 	try {
-            filein = new RandomAccessFile(filename, "r");
-            parseHeader();
+            //filein = new RandomAccessFile(filename, "r");
+	    filein = new LargeFileReader(filename);
+	    parseHeader();
 	    parseColumnLabels();
             file_pos = filein.getFilePointer();
-	}catch(IOException ie){}
+	}catch(IOException ie){
+	    System.out.println("Couldn't open file as VCF");
+	}
     }
 
     private void parseColumnLabels(){

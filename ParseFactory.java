@@ -61,7 +61,8 @@ public class ParseFactory{
 
     public static boolean isVCF(final String filename){
 	try {
-	    BufferedReader in = new BufferedReader(new FileReader(filename));
+	    LargeFileReader in = new LargeFileReader(filename);
+	    //BufferedReader in = new BufferedReader(new FileReader(filename));
 	    String line = in.readLine();
 	    in.close();
 	    if(line != null && line.indexOf("##fileformat=") >= 0){

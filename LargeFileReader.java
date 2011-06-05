@@ -22,6 +22,7 @@ public class LargeFileReader {
 	}else if(isBGZF(filename)){
 	    isASCII = false;
 	    bgzf = new BlockCompressedInputStream(new File(filename));
+	    bgzf.seek(0);
 	    file_size = (new File(filename)).length();
 	    //bgzf = new BlockCompressedInputStream(new RandomAccessFile(filename, "r"));
 	    txt = null;
@@ -35,7 +36,7 @@ public class LargeFileReader {
         int numchars = bufferedInput.read(buffer);
         for(int i = 0; i < numchars; i++){
             char c = (char)buffer[i];
-            if(c < 32 || c > 126 || !Character.isWhitespace(c)){
+            if((c < 32 || c > 126) && !Character.isWhitespace(c)){
 		return false;
             }
         }
@@ -62,7 +63,13 @@ public class LargeFileReader {
 
     public long getFilePointer() throws IOException {
 	if(isASCII && txt != null) return txt.getFilePointer();
-	if(!isASCII && bgzf != null) return bgzf.getFilePointer();
+	if(!isASCII && bgzf != null){ 
+	    try {
+		return bgzf.getFilePointer();
+	    }catch(Exception e){
+		e.printStackTrace();
+	    }
+	}
 	return 0;
     }
 
@@ -79,7 +86,9 @@ public class LargeFileReader {
     }
 
     public String readLine() throws IOException {
-	if(isASCII && txt != null) txt.readLine();
+	if(isASCII && txt != null){
+	    return txt.readLine();
+	}
 	if(!isASCII && bgzf != null){
 	    String ans = "";
 	    char c;
