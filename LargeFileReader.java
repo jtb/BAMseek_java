@@ -102,8 +102,8 @@ public class LargeFileReader {
 	if(!isASCII && bgzf != null){
 	    String ans = "";
 	    char c;
-	    while((c = (char)bgzf.read())>=0){
-		//System.out.println(c);
+	    while((c = (char)bgzf.read()) < 255){
+				
 		if(c != '\n') ans += c;
 		else return ans;
 	    }
