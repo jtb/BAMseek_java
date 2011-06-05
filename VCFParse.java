@@ -3,12 +3,17 @@ import java.io.*;
 
 public class VCFParse extends BaseParse {
     protected HashMap<String, String> tagmap = new HashMap<String, String>(16);
-    private static final int BUFF_SIZE = 1024*128;
+    private static final int BUFF_SIZE = 1024;
     private static final byte[] buffer = new byte[BUFF_SIZE];
     private int buffer_pos;
     private int buffer_size;
 
-    private long file_pos;
+    //private long file_pos;
+    //private long line_no = 0;
+    private long page_start;
+    private long block_addr;
+    private long line_no = 0;
+
     //private RandomAccessFile filein;
     private LargeFileReader filein;
 
@@ -28,14 +33,18 @@ public class VCFParse extends BaseParse {
 	initTags();
 
 	buffer_pos = 0;
-	file_pos = 0;
+	//file_pos = 0;
+	page_start = 0;
+	block_addr = 0;
 
 	try {
             //filein = new RandomAccessFile(filename, "r");
 	    filein = new LargeFileReader(filename);
 	    parseHeader();
 	    parseColumnLabels();
-            file_pos = filein.getFilePointer();
+            //file_pos = filein.getFilePointer();
+	    page_start = filein.getFilePointer();
+	    block_addr = filein.getFilePointer();
 	}catch(IOException ie){
 	    System.out.println("Couldn't open file as VCF");
 	}
@@ -94,6 +103,37 @@ public class VCFParse extends BaseParse {
     }
 
     public long getNextRecordIndex(){
+	try{
+	    if((line_no % 1000) == 0){
+		filein.seek(block_addr);
+		byte[] buff = new byte[buffer_pos];
+		filein.read(buff);
+		page_start = filein.getFilePointer();
+		buffer_size = 0;
+	    }
+
+	    while(true){
+		if(buffer_size == 0 || buffer_pos >= buffer_size){
+                    block_addr = filein.getFilePointer();
+                    buffer_size = filein.read(buffer);
+                    buffer_pos = 0;
+                }
+		if(buffer_size < 1) return -1;
+		if(buffer[buffer_pos] == '\n'){
+		    buffer_pos++;
+		    line_no++;
+		    return page_start;
+		}
+		buffer_pos++;
+	    }
+	}catch(IOException ie){
+	    ie.printStackTrace();
+	    return -1;
+	}
+    }
+    
+    /**
+    public long getNextRecordIndex3(){
 	//YIKES! can't do arithmetic on BGZF.
 	long offset = file_pos + buffer_pos;
 
@@ -115,6 +155,7 @@ public class VCFParse extends BaseParse {
             return -1;
         }
     }
+    **/
 
     public String[] getNextRecord(){
 	try {
