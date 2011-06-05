@@ -73,6 +73,16 @@ public class LargeFileReader {
 	return 0;
     }
 
+    public long getRealOffset() throws IOException {
+	if(isASCII && txt != null) return txt.getFilePointer();
+	if(!isASCII && bgzf != null){
+	    return BlockCompressedFilePointerUtil.getBlockAddress(bgzf.getFilePointer());
+	}
+	
+	return 0;
+
+    }
+
     public long length() throws IOException { 
 	if(isASCII && txt != null) return txt.length();
 	if(!isASCII && bgzf != null) return file_size;
@@ -93,6 +103,7 @@ public class LargeFileReader {
 	    String ans = "";
 	    char c;
 	    while((c = (char)bgzf.read())>=0){
+		//System.out.println(c);
 		if(c != '\n') ans += c;
 		else return ans;
 	    }
@@ -102,6 +113,8 @@ public class LargeFileReader {
 
     public void seek(long pos) throws IOException {
 	if(isASCII && txt != null) txt.seek(pos);
+	//System.out.println(pos);
+	//System.out.println("hey hey " + BlockCompressedFilePointerUtil.getBlockAddress(pos));
 	if(!isASCII && bgzf != null) bgzf.seek(pos);
     }
 

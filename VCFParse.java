@@ -82,7 +82,19 @@ public class VCFParse extends BaseParse {
 	filein.seek(offset);
     }
 
+    public long getNextRecordIndex2(){
+	try {
+	    long offset = filein.getFilePointer();
+	    String s = filein.readLine();
+	    if(s == null) return -1;
+	    return offset;
+	}catch(IOException ie){
+	    return -1;
+	}
+    }
+
     public long getNextRecordIndex(){
+	//YIKES! can't do arithmetic on BGZF.
 	long offset = file_pos + buffer_pos;
 
         try {
@@ -116,9 +128,9 @@ public class VCFParse extends BaseParse {
 
     public double getProgress(){
 	try {
-            return 1.0*filein.getFilePointer()/(1.0*filein.length());
+	    return 1.0*filein.getRealOffset()/(1.0*filein.length());
         } catch (IOException e){
-            return 1.0;
+	    return 1.0;
         }
     }
     
