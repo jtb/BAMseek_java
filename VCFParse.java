@@ -210,7 +210,14 @@ public class VCFParse extends BaseParse {
 		}
 		
 		if(alleles.length != 2){
-		    ans += " " + values[i];
+		    int val0 = getInt(values[i]);
+		    if(val0 == 0){
+			ans += " " + reference;
+		    }else if(val0 < 1 || val0 > alts.length){
+			ans += " " + values[i];
+		    }else{
+			ans += " " +  alts[val0-1];
+		    }
 		}else{
 		    int val0 = getInt(alleles[0]);
 		    int val1 = getInt(alleles[1]);
