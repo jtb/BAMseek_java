@@ -113,8 +113,6 @@ public class LargeFileReader {
 
     public void seek(long pos) throws IOException {
 	if(isASCII && txt != null) txt.seek(pos);
-	//System.out.println(pos);
-	//System.out.println("hey hey " + BlockCompressedFilePointerUtil.getBlockAddress(pos));
 	if(!isASCII && bgzf != null) bgzf.seek(pos);
     }
 

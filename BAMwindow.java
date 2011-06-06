@@ -3,8 +3,6 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.beans.*;
 import java.io.*;
-//import javax.imageio.ImageIO;
-//import java.awt.image.BufferedImage;
 import javax.swing.ImageIcon;
 
 import javax.swing.table.AbstractTableModel;
@@ -362,17 +360,6 @@ class PagingModel extends AbstractTableModel {
 		col_sizes[i] = pr.getColumnName(i).length();
 	    }
 	}
-
-	/**
-	for(int r = 0; r < data.size(); r++){
-	    for(int c = 0; c < Math.min(col_sizes.length, data.get(r).length); c++){
-		
-		if(data.get(r)[c].length() > col_sizes[c]){
-		    col_sizes[c] = data.get(r)[c].length();
-		}
-	    }
-	}
-	**/
     }
     
     public Object getValueAt(int row, int col) {
@@ -384,10 +371,6 @@ class PagingModel extends AbstractTableModel {
 	String value = getValueAt(row, col).toString();
 	String other_values[] = data.get(row); 
 	
-	//String next_value = "";
-	//if(getColumnCount() > col + 1){
-	//  next_value = getValueAt(row, col+1).toString();
-	//}
 	return pr.getToolTip(value, row, col, other_values);
     }
 

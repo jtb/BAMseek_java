@@ -90,8 +90,6 @@ public class PageReader {
 	    for(int count = 0; count < PAGE_SIZE; count++){
 		if((offset = parser.getNextRecordIndex()) >= 0){
 		    if(count == 0){
-			//System.out.println(offset);
-			//System.out.println("hey " + offset +" hey " + BlockCompressedFilePointerUtil.getBlockAddress(offset));
 			pages.add(offset);
 		    }
 		}else{

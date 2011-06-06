@@ -8,13 +8,10 @@ public class VCFParse extends BaseParse {
     private int buffer_pos;
     private int buffer_size;
 
-    //private long file_pos;
-    //private long line_no = 0;
     private long page_start;
     private long block_addr;
     private long line_no = 0;
 
-    //private RandomAccessFile filein;
     private LargeFileReader filein;
 
     String col_names[] =  {
@@ -33,16 +30,13 @@ public class VCFParse extends BaseParse {
 	initTags();
 
 	buffer_pos = 0;
-	//file_pos = 0;
 	page_start = 0;
 	block_addr = 0;
 
 	try {
-            //filein = new RandomAccessFile(filename, "r");
 	    filein = new LargeFileReader(filename);
 	    parseHeader();
 	    parseColumnLabels();
-            //file_pos = filein.getFilePointer();
 	    page_start = filein.getFilePointer();
 	    block_addr = filein.getFilePointer();
 	}catch(IOException ie){
@@ -132,31 +126,6 @@ public class VCFParse extends BaseParse {
 	}
     }
     
-    /**
-    public long getNextRecordIndex3(){
-	//YIKES! can't do arithmetic on BGZF.
-	long offset = file_pos + buffer_pos;
-
-        try {
-            while(true){
-                if(buffer_size == 0 || buffer_pos >= buffer_size){
-                    file_pos = filein.getFilePointer();
-                    buffer_size = filein.read(buffer);
-                    buffer_pos = 0;
-                }
-                if(buffer_size < 1) return -1;
-                if(buffer[buffer_pos] == '\n'){
-                    buffer_pos++;
-                    return offset;
-                }
-                buffer_pos++;
-            }
-        }catch(IOException ie){
-            return -1;
-        }
-    }
-    **/
-
     public String[] getNextRecord(){
 	try {
             String s = filein.readLine();

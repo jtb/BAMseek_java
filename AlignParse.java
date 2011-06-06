@@ -42,9 +42,6 @@ public abstract class AlignParse extends BaseParse {
 	    String qual = other_values[10];
 	    return prettyPrintBaseQual(value, qual);
 	}
-        //if(col == 9 && !next_value.equals("")){//BaseQual
-	//  return prettyPrintBaseQual(value, next_value);
-	//}
         if(col > 10){//Tag
 	    return prettyPrintTag(value);
         }
