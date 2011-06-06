@@ -72,7 +72,7 @@ public class BAMwindow extends JFrame implements PropertyChangeListener {
 	    progressMonitor.setProgress(100);
 
 	    if(header_text == null){
-		JOptionPane.showMessageDialog(BAMwindow.this, "Error: Unable to recognize file as BAM or SAM.");
+		JOptionPane.showMessageDialog(BAMwindow.this, "Error: Unable to recognize file as BAM/SAM/VCF.");
 	    }
 	}
     }
@@ -102,7 +102,7 @@ public class BAMwindow extends JFrame implements PropertyChangeListener {
     }
 
     BAMwindow(){
-	super("BAMseek: Large BAM/SAM File Viewer");
+	super("BAMseek: Large BAM/SAM/VCF File Viewer");
 	
 	setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	initMenu();
