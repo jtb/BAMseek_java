@@ -46,7 +46,7 @@ public class CASAVA_FASTQ extends FASTQParse {
 
             while((line=filein.readLine()) != null){
                 
-                if(!line.substring(0,1).equals("@")) break;
+                if(!line.substring(0,1).equals("@")) return null;
                 String header = line.substring(1);
 		String [] result = header.split(" ");
 		if(result.length > 0){
@@ -68,7 +68,7 @@ public class CASAVA_FASTQ extends FASTQParse {
                     if(line.matches("[ACTGNacgtnURYSWKMBDHVN.-]*")){
                         seq += line;
                     }else{
-                        if(!line.substring(0,1).equals("+")) break;
+                        if(!line.substring(0,1).equals("+")) return null;
                         
                         while((line = filein.readLine()) != null){
                             qual += line;
@@ -77,11 +77,9 @@ public class CASAVA_FASTQ extends FASTQParse {
                                 ans[12] = qual;
                                 return ans;
                             }
-                            break;
                         }
                     }
                 }
-                break;
 
             }
             return null;

@@ -116,7 +116,7 @@ public class FASTQParse extends BaseParse {
 	    
 	    while((line=filein.readLine()) != null){
 		//get description
-		if(!line.substring(0,1).equals("@")) break;
+		if(!line.substring(0,1).equals("@")) return null;
 		ans[0] = line.substring(1);
 		String seq = "";
 		String qual = "";
@@ -124,7 +124,7 @@ public class FASTQParse extends BaseParse {
 		    if(line.matches("[ACTGNacgtnURYSWKMBDHVN.-]*")){
 			seq += line;
 		    }else{
-			if(!line.substring(0,1).equals("+")) break;
+			if(!line.substring(0,1).equals("+")) return null;
 			//ans[2] = line.substring(1);
 			while((line = filein.readLine()) != null){
 			    qual += line;
@@ -133,12 +133,9 @@ public class FASTQParse extends BaseParse {
 				ans[2] = qual;
 				return ans;
 			    }
-			    break;
 			}
 		    }
 		}
-		break;
-	    
 	    }
 	    return null;
 	} catch (Exception e){
