@@ -14,7 +14,9 @@ public class CASAVA_FASTQ extends FASTQParse {
 	"Read Number",
 	"Is Filtered?",
 	"Control Number",
-	"Barcode sequence"
+	"Barcode sequence",
+	"Sequence",
+	"Quality"
     };
 
     public CASAVA_FASTQ(final String filename){
@@ -89,8 +91,8 @@ public class CASAVA_FASTQ extends FASTQParse {
     }
 
     public String getToolTip(final String value, int row, int col, final String[] other_values){
-        if(col == 1 && other_values.length > 2){
-            String qual = other_values[2];
+        if(col == 11 && other_values.length > 12){
+            String qual = other_values[12];
             return prettyPrintBaseQual(value, qual);
         }
 
