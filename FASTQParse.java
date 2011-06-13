@@ -2,13 +2,13 @@ import java.util.*;
 import java.io.*;
 
 public class FASTQParse extends BaseParse {
-    private static final int BUFF_SIZE = 1024;
-    private static final byte[] buffer = new byte[BUFF_SIZE];
-    private int buffer_pos;
-    private int buffer_size;
+    protected static final int BUFF_SIZE = 1024;
+    protected static final byte[] buffer = new byte[BUFF_SIZE];
+    protected int buffer_pos;
+    protected int buffer_size;
     
-    private long file_pos;
-    private RandomAccessFile filein;
+    protected long file_pos;
+    protected RandomAccessFile filein;
 
     String col_names[] =  {
 	"Sequence Name",
@@ -32,7 +32,7 @@ public class FASTQParse extends BaseParse {
 	
     }
 
-    private void parseHeader(){
+    protected void parseHeader(){
 	String line = null;
         header = "";
         long pos = 0;

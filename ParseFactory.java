@@ -13,6 +13,10 @@ public class ParseFactory{
 	    return new VCFParse(filename);
 	}
 	if(ParseFactory.isFASTQ(filename)){
+	    if(ParseFactory.isCASAVA(filename)){
+		return new CASAVA_FASTQ(filename);
+	    }
+	    
 	    return new FASTQParse(filename);
 	}
 	return null;
@@ -111,6 +115,45 @@ public class ParseFactory{
             }
             	
 	    in.close();
+	}catch(Exception e){
+	    return false;
+	}
+	
+	return false;
+    }
+
+    public static boolean isCASAVA(final String filename){
+	
+	try {
+	    BufferedReader in = new BufferedReader(new FileReader(filename));
+
+            String line = "";
+	    String tag = "";
+            while((line = in.readLine()) != null){
+                tag = line.substring(0, 1);
+                if(!tag.equals("#")){
+                    break;
+                }
+	    }
+	    in.close();
+	    
+	    //identification line
+	    if(!tag.equals("@")){
+		return false;
+	    }
+	    
+	    //See if line looks like CASAVA 1.8
+	    String [] result = line.split(" ");
+	    if(result.length == 2){
+		String[] header1 = result[0].split(":");
+		String [] header2 = result[1].split(":");
+		if(header1.length == 7 && header2.length >=3){
+		    return true;
+		}
+	    }
+
+		
+            	    
 	}catch(Exception e){
 	    return false;
 	}
