@@ -12,6 +12,9 @@ public class ParseFactory{
 	if(ParseFactory.isVCF(filename)){
 	    return new VCFParse(filename);
 	}
+	if(ParseFactory.isFASTQ(filename)){
+	    return new FASTQParse(filename);
+	}
 	return null;
     }
 
@@ -74,4 +77,46 @@ public class ParseFactory{
 	return false;
     }
     
+    public static boolean isFASTQ(final String filename){
+	
+	try {
+	    BufferedReader in = new BufferedReader(new FileReader(filename));
+
+            String line = null;
+            while((line = in.readLine()) != null){
+                String tag = line.substring(0, 1);
+                if(tag.equals("#")){
+                    continue;
+                }
+
+		//identification line
+		if(!tag.equals("@")){
+		    break;
+		}
+		if((line = in.readLine()) == null) break;
+		//Sequence line
+		//String seq = "";
+		while((line = in.readLine()) != null){
+		    //http://illumina.ucr.edu/ht/documentation/standardized-fastq-format-aka-fastq2
+		    if(!line.matches("[ACTGNacgtnURYSWKMBDHVN.-]*")){
+			break;
+		    }
+		}
+		//Qual id
+		if(!line.substring(0,1).equals("+")){
+		    break;
+		}
+		return true;
+		   
+            }
+            	
+	    in.close();
+	}catch(Exception e){
+	    return false;
+	}
+	
+	return false;
+    }
+
+
 }
