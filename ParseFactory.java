@@ -3,23 +3,45 @@ import net.sf.samtools.util.BlockCompressedInputStream;
 
 public class ParseFactory{
     public static BaseParse NewParse(final String filename){
+	boolean isASCII = ParseFactory.isText(filename);
+
 	if(ParseFactory.isBAM(filename)){
 	    return new BAMParse(filename);
 	}
-	if(ParseFactory.isSAM(filename)){
+	if(isASCII && ParseFactory.isSAM(filename)){
 	    return new SAMParse(filename);
 	}
 	if(ParseFactory.isVCF(filename)){
 	    return new VCFParse(filename);
 	}
-	if(ParseFactory.isFASTQ(filename)){
+	if(isASCII && ParseFactory.isFASTQ(filename)){
 	    if(ParseFactory.isCASAVA(filename)){
 		return new CASAVA_FASTQ(filename);
 	    }
-	    
 	    return new FASTQParse(filename);
 	}
+	
 	return null;
+    }
+
+    public static boolean isText(final String filename){
+	try {
+	    BufferedInputStream bufferedInput = new BufferedInputStream(new FileInputStream(filename));
+	    byte[] buffer = new byte[1024];
+	    int numchars = bufferedInput.read(buffer);
+	    for(int i = 0; i < numchars; i++){
+		char c = (char)buffer[i];
+		if((c < 32 || c > 126) && !Character.isWhitespace(c)){
+		    bufferedInput.close();
+		    return false;
+		}
+	    }
+
+	    bufferedInput.close();
+	    return true;
+	}catch (Exception e){
+	    return false;
+	}
     }
 
     public static boolean isBAM(final String filename){
