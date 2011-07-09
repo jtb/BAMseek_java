@@ -49,11 +49,11 @@ public class ParseFactory{
     public static boolean isSFF(final String filename){
         try{
 	    BufferedReader in = new BufferedReader(new FileReader(filename));
-	    char arr[] = new char[4];
-	    in.read(arr, 0, 4);
+	    char arr[] = new char[8];
+	    in.read(arr, 0, 8);
 	    String magic = new String(arr);
 	    in.close();
-	    return magic.equals(".sff");
+	    return magic.equals(".sff\0\0\0\1");
 	}catch(Exception ie){
             return false;
         }catch(Throwable t){
