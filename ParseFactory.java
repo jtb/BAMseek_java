@@ -20,7 +20,9 @@ public class ParseFactory{
 	    }
 	    return new FASTQParse(filename);
 	}
-	
+	if(ParseFactory.isSFF(filename)){
+	    return new SFFParse(filename);
+	}
 	return null;
     }
 
@@ -42,6 +44,21 @@ public class ParseFactory{
 	}catch (Exception e){
 	    return false;
 	}
+    }
+
+    public static boolean isSFF(final String filename){
+        try{
+	    BufferedReader in = new BufferedReader(new FileReader(filename));
+	    char arr[] = new char[4];
+	    in.read(arr, 0, 4);
+	    String magic = new String(arr);
+	    in.close();
+	    return magic.equals(".sff");
+	}catch(Exception ie){
+            return false;
+        }catch(Throwable t){
+            return false;
+        }
     }
 
     public static boolean isBAM(final String filename){
