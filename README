@@ -1,0 +1,6 @@
+To Compile:
+jar cfm BAMseek.jar manifest.txt *.class net images
+
+To Run:
+Double click on the BAMseek.jar file -OR-
+java -jar BAMseek.jar
