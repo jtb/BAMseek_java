@@ -1,4 +1,7 @@
 To Compile:
+javac *java
+
+To create Java Archive File:
 jar cfm BAMseek.jar manifest.txt *.class net images
 
 To Run:
