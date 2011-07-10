@@ -4,6 +4,12 @@ import java.io.*;
 
 public class SFFParse extends BaseParse {
 
+    String col_names[] = {
+	"Query Name",
+	"Read Sequence",
+	"Read Quality"
+    };
+
     public SFFParse(final String filename){
 	super(filename);
 	
@@ -62,10 +68,11 @@ public class SFFParse extends BaseParse {
 	    int clip_adapter_left = filein.readUnsignedShort();
 	    int clip_adapter_right = filein.readUnsignedShort();
 	    
-	    int first_insert_base = Math.max(1, Math.max(clip_qual_left, clip_qual_right)) - 1;
+	    int first_insert_base = Math.max(1, Math.max(clip_qual_left, clip_adapter_left)) - 1;
 	    int last_insert_base = Math.min((clip_qual_right==0 ? number_of_bases : clip_qual_right),(clip_adapter_right==0 ? number_of_bases : clip_adapter_right));
 	    
 	    //System.out.println(clip_qual_left + " " + clip_qual_right + " " + clip_adapter_left + " " + clip_adapter_right);
+	    //System.out.println(first_insert_base + " " + last_insert_base);
 
 	    byte buffer[] = new byte[name_length];
 	    filein.read(buffer);
@@ -173,6 +180,46 @@ public class SFFParse extends BaseParse {
         }
     }
     
+
+    public String getToolTip(final String value, int row, int col, final String[] other_values){ 
+	if(col == 1 && other_values.length > 2){
+	    String qual = other_values[2];
+	    return prettyPrintBaseQual(value, qual);
+	}
+	return value;
+    }
+
+    protected String prettyPrintBaseQual(String bases, String quals){
+        if(bases.equals("*") || bases.length() != quals.length()) return ("<html><font size=\"5\">" + bases + "</font></html>");
+        String hexcolor = "<html>";
+        for(int i = 0; i < bases.length(); i++){
+	    hexcolor += "<font size=\"5\" color=\"";
+            int c = (int)quals.charAt(i) - 33;
+	    if(c < 20) hexcolor += "#E9CFEC";else hexcolor += "#571B7e";
+
+            hexcolor += "\">";
+            hexcolor += bases.charAt(i);
+            hexcolor += "</font>";
+        }
+        hexcolor += "</html>";
+        return hexcolor;
+    }
+    
+    public String getColumnName(int col){
+	if(col_names == null) return "";
+	if(col >= col_names.length){
+            return "";
+        }
+        if(col < 0){
+            return "";
+        }
+        return col_names[col];
+    }
+    
+    public int getNumColumnLabels() { 
+	if(col_names == null) return 0;
+        return col_names.length;
+    }
 
     private RandomAccessFile filein;
     long index_offset = 0;
