@@ -28,21 +28,17 @@ public class SFFParse extends BaseParse {
 	    }
 	    	    
 	    int read_header_length = filein.readUnsignedShort();
-            System.out.println("read header length " + read_header_length);
 	    int name_length = filein.readUnsignedShort();
 	    
 	    byte buffer[] = new byte[4];
 	    filein.read(buffer);
 	    long number_of_bases = BytesHelper.toUintRev(buffer);
-	    System.out.println("num bases " + number_of_bases);
-
+	    
 	    filein.seek(offset + read_header_length);
 	    long read_data_size = FLOWGRAM_BYTES_PER_FLOW*number_of_flows_per_read + 3*number_of_bases;
 	    if((read_data_size & 7) > 0){
-		System.out.println("got here!!!");
 		read_data_size = (((read_data_size >> 3)+1) <<3);
 	    }
-	    System.out.println("read data size is " + read_data_size);
 	    
 	    filein.seek(offset + read_header_length + read_data_size);
 	    return offset;
@@ -59,27 +55,21 @@ public class SFFParse extends BaseParse {
 	    int read_header_length = filein.readUnsignedShort();
 	    int name_length = filein.readUnsignedShort();
 
-	    System.out.println("A " + read_header_length);
-	    System.out.println(name_length);
-
 	    int number_of_bases = filein.readInt();
-	    System.out.println(number_of_bases);
-
+	    
 	    int clip_qual_left = filein.readUnsignedShort();
 	    int clip_qual_right = filein.readUnsignedShort();
 	    int clip_adapter_left = filein.readUnsignedShort();
 	    int clip_adapter_right = filein.readUnsignedShort();
-
-	    System.out.println(clip_qual_left);
-	    System.out.println(clip_qual_right);
-	    System.out.println(clip_adapter_left);
-	    System.out.println(clip_adapter_right);
+	    
+	    int first_insert_base = Math.max(1, Math.max(clip_qual_left, clip_qual_right)) - 1;
+	    int last_insert_base = Math.min((clip_qual_right==0 ? number_of_bases : clip_qual_right),(clip_adapter_right==0 ? number_of_bases : clip_adapter_right));
+	    
+	    //System.out.println(clip_qual_left + " " + clip_qual_right + " " + clip_adapter_left + " " + clip_adapter_right);
 
 	    byte buffer[] = new byte[name_length];
 	    filein.read(buffer);
             char Name[] = new String(buffer).toCharArray();
-
-	    System.out.println(Name);
 
 	    filein.seek(offset + read_header_length);
 	    long read_data_size = FLOWGRAM_BYTES_PER_FLOW*number_of_flows_per_read + 3*number_of_bases;
@@ -100,7 +90,14 @@ public class SFFParse extends BaseParse {
 	    buffer = new byte[number_of_bases];
 	    filein.read(buffer);
 	    char Bases[] = new String(buffer).toCharArray();
+	    for(int i = 0; i < first_insert_base; i++){
+		Bases[i] = Character.toLowerCase(Bases[i]);
+	    }
+	    for(int i = last_insert_base; i < Bases.length; i++){
+		Bases[i] = Character.toLowerCase(Bases[i]);
+	    }
 	    
+
 	    byte qual[] = new byte[number_of_bases];
 	    filein.read(qual);
 	    for(int i = 0; i < qual.length; i++){
@@ -155,8 +152,7 @@ public class SFFParse extends BaseParse {
 	    header += ("# of Reads: " + BytesHelper.toUintRev(bytes) + "\n");
 
 	    int header_length = filein.readUnsignedShort();
-	    System.out.println("header length: " + header_length);
-
+	    
 	    int key_length = filein.readUnsignedShort();
 	    number_of_flows_per_read = filein.readUnsignedShort();
 	    
