@@ -72,7 +72,7 @@ public class BAMwindow extends JFrame implements PropertyChangeListener {
 	    progressMonitor.setProgress(100);
 
 	    if(header_text == null){
-		JOptionPane.showMessageDialog(BAMwindow.this, "Error: Unable to recognize file as BAM/SAM/FASTQ/VCF.");
+		JOptionPane.showMessageDialog(BAMwindow.this, "Error: Unable to recognize file as BAM/SAM/FASTQ/VCF/SFF.");
 	    }
 	}
     }
@@ -102,7 +102,7 @@ public class BAMwindow extends JFrame implements PropertyChangeListener {
     }
 
     BAMwindow(){
-	super("BAMseek: Large BAM/SAM/FASTQ/VCF File Viewer");
+	super("BAMseek: Large BAM/SAM/FASTQ/VCF/SFF File Viewer");
 	
 	setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	initMenu();
@@ -128,7 +128,7 @@ public class BAMwindow extends JFrame implements PropertyChangeListener {
 	JTable rowTable = new RowNumberTable(table);
 	JPanel content = new JPanel();
 	content.setLayout(new BorderLayout());
-	header = new JTextArea("Welcome!\n\nBAMseek allows you to scroll through large SAM/BAM, FASTQ and VCF files.  Please go to \'File > Open File ...' to get started.  \n\nFor updates, visit http://code.google.com/p/bamseek/");
+	header = new JTextArea("Welcome!\n\nBAMseek allows you to scroll through large SAM/BAM, FASTQ, VCF and SFF files.  Please go to \'File > Open File ...' to get started.\n\nFor updates, visit http://code.google.com/p/bamseek/");
 	header.setEditable(false);
 	JScrollPane scrollHeader = new JScrollPane(header);
 	JScrollPane scrollTable = new JScrollPane(table);
@@ -409,7 +409,7 @@ class PagingModel extends AbstractTableModel {
 
     public String getHeader(){
 	if(filename.equals("")){
-            return "BAMseek allows you to scroll through large SAM/BAM, FASTQ and VCF files.  Please go to \'File > Open\' File to get started.        ";
+            return "BAMseek allows you to scroll through large SAM/BAM, FASTQ, VCF and SFF files.  Please go to \'File > Open\' File to get started.    ";
 	}
 	
         if(pr == null || pr.invalid){

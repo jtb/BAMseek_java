@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jnlp spec="1.0+" 
-    codebase="http://bamseek.googlecode.com/files/"
-    href="BAMseek.jnlp">
+      codebase="http://bamseek.googlecode.com/files/"
+      href="BAMseek.jnlp">
     <information>
         <title>BAMseek WebStart</title>
         <vendor>Justin T. Brown</vendor>
+	<offline-allowed />
     </information>
     <resources>
         <!-- Application Resources -->
         <j2se version="1.6+"
               href="http://java.sun.com/products/autodl/j2se"/>
-        <jar href="BAMseek2011June14.jar" main="true" />
+        <jar href="BAMseek.jar" main="true" />
 
     </resources>
+    <security>
+      <all-permissions />
+    </security>
     <application-desc
          name="BAMseek Application"
          main-class="BAMseek"
