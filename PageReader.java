@@ -70,16 +70,66 @@ public class PageReader {
     private int line_count = 0;
     private BaseParse parser = null;
     private PageIndexer index = null;
-
+        
     private class PageIndexer {
 	public static final int PAGE_SIZE = 1000;
 	BaseParse parser = null;
 
+	File indexfile = null;
+	boolean validindex = false;
+	DataOutputStream dos = null;
+	boolean writableIndex = true;
+	boolean already_recorded = false;
+	boolean indexing_on = true;
+
 	public PageIndexer(final String filename){
+	    indexfile = new File(filename + ".lfidx");
+	    try{
+		if(indexing_on && indexfile.lastModified() > (new File(filename)).lastModified()){
+		    DataInputStream dis = new DataInputStream(new FileInputStream(indexfile));
+		    byte arr[] = new byte[8];
+		    dis.readFully(arr);
+		    String magic = new String(arr);
+		    if(magic.equals("LFIDX001")){
+			validindex = true;
+			while(true){
+			    long idx = dis.readLong();
+			    pages.add(idx);
+			}
+		    }
+		    dis.close();
+		}
+	    }catch(EOFException e){
+
+	    }catch(IOException e){
+		validindex = false;
+	    }
+	    
 	    parser = ParseFactory.NewParse(filename);
 	    done = false;
 	    
 	    invalid = (parser == null);
+	    
+	    //Open index for writing.  If valid index does not exist, create one.
+	    try{
+		if(!invalid && indexing_on){
+		    if(validindex){
+			dos = new DataOutputStream(new FileOutputStream(indexfile,true));
+		    }else{
+			dos = new DataOutputStream(new FileOutputStream(indexfile,false));
+			dos.writeBytes("LFIDX001");
+		    }
+
+		    if(pages.size() > 0){
+			parser.seek(pages.get(pages.size()-1));
+			already_recorded = true;
+		    }
+
+		}
+	    }catch(IOException e){
+		writableIndex = false;
+	    }
+
 	}
 	
 	public boolean update(){
@@ -90,7 +140,17 @@ public class PageReader {
 	    for(int count = 0; count < PAGE_SIZE; count++){
 		if((offset = parser.getNextRecordIndex()) >= 0){
 		    if(count == 0){
-			pages.add(offset);
+			if(!already_recorded){
+			    pages.add(offset);
+			    try {
+				if(dos != null && writableIndex){
+				    dos.writeLong(offset);
+				}
+			    }catch(IOException e){
+				//cannot write to index file, oh well.
+			    }
+			}
+			already_recorded = false;
 		    }
 		}else{
 		    done = true;
@@ -104,6 +164,13 @@ public class PageReader {
 	    return (int)(100*(parser.getProgress()));
 	}
 	public void finish(){
+	    //flush file
+	    try{
+		if(dos != null){
+		    dos.close();
+		}
+	    }catch(IOException e){}
+
 	    done = true;
 	    parser = null;
 	}
