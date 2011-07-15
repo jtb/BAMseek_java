@@ -83,6 +83,8 @@ public class PageReader {
 	boolean indexing_on = true;
 
 	public PageIndexer(final String filename){
+	    indexing_on = Global.indexing_on;
+	    System.out.println("now is "+ indexing_on);
 	    indexfile = new File(filename + ".lfidx");
 	    try{
 		if(indexing_on && indexfile.lastModified() > (new File(filename)).lastModified()){
