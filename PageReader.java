@@ -84,10 +84,10 @@ public class PageReader {
 
 	public PageIndexer(final String filename){
 	    indexing_on = Global.indexing_on;
-	    System.out.println("now is "+ indexing_on);
+	    //System.out.println("now is "+ indexing_on);
 	    indexfile = new File(filename + ".lfidx");
 	    try{
-		if(indexing_on && indexfile.lastModified() > (new File(filename)).lastModified()){
+		if(indexfile.lastModified() > (new File(filename)).lastModified()){
 		    DataInputStream dis = new DataInputStream(new FileInputStream(indexfile));
 		    byte arr[] = new byte[8];
 		    dis.readFully(arr);
@@ -121,17 +121,20 @@ public class PageReader {
 			dos = new DataOutputStream(new FileOutputStream(indexfile,false));
 			dos.writeBytes("LFIDX001");
 		    }
-
-		    if(pages.size() > 0){
-			parser.seek(pages.get(pages.size()-1));
-			already_recorded = true;
-		    }
-
 		}
 	    }catch(IOException e){
 		writableIndex = false;
 	    }
 
+	    try {
+		if(pages.size() > 0){
+		    parser.seek(pages.get(pages.size()-1));
+		    already_recorded = true;
+		}
+	    }catch(IOException e){
+		pages.clear();
+		already_recorded = false;
+	    }
 	}
 	
 	public boolean update(){

@@ -176,7 +176,7 @@ public class BAMwindow extends JFrame implements PropertyChangeListener {
 	index_item.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent event){
 		    Global.indexing_on = !Global.indexing_on;
-		    System.out.println("Indexing is on? " + Global.indexing_on);
+		    //System.out.println("Indexing is on? " + Global.indexing_on);
 		}
 	    });
 	indexMenu.add(index_item);
